@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="de0e4480-aa25-4474-8345-8ec349c091ab" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/icons/256x256.png" beforeDir="false" afterPath="$PROJECT_DIR$/build/icons/256x256.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/icons/icon.icns" beforeDir="false" afterPath="$PROJECT_DIR$/build/icons/icon.icns" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/icons/icon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/build/icons/icon.ico" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ejs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/dist/" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -21,15 +16,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="1" selection-start-column="1" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/renderer/App.vue">
           <provider selected="true" editor-type-id="text-editor">
@@ -65,11 +51,20 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/index.ejs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="357">
               <caret line="17" column="55" selection-start-line="17" selection-start-column="55" selection-end-line="17" selection-end-column="55" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="231">
+              <caret line="11" column="5" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -111,6 +106,7 @@
         <option value="$PROJECT_DIR$/src/renderer/App.vue" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/src/index.ejs" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -213,12 +209,12 @@
       <option name="presentableId" value="Default" />
       <updated>1583820212715</updated>
       <workItem from="1583820214020" duration="749000" />
-      <workItem from="1583823705280" duration="1393000" />
+      <workItem from="1583823705280" duration="1432000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2142000" />
+    <option name="totallyTimeSpent" value="2181000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="789" extended-state="6" />
@@ -311,6 +307,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="17" column="55" selection-start-line="17" selection-start-column="55" selection-end-line="17" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="231">
+          <caret line="11" column="5" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
         </state>
       </provider>
     </entry>
