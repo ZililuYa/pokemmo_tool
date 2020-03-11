@@ -5,7 +5,7 @@
                 <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
                     <md-icon>menu</md-icon>
                 </md-button>
-                <span class="md-title">首页</span>
+                <span class="md-title">{{name}}</span>
 
                 <div class="md-toolbar-section-end">
                     <md-button class="md-icon-button">
@@ -19,22 +19,22 @@
                 <md-toolbar class="md-transparent" md-elevation="0">PokeMMO游戏工具</md-toolbar>
 
                 <md-list>
-                    <md-list-item>
+                    <md-list-item @click="toPath('/', '首页')">
                         <md-icon>home</md-icon>
                         <span class="md-list-item-text">首页</span>
                     </md-list-item>
 
-                    <md-list-item>
+                    <md-list-item @click="toPath('/pvp', '招式伤害计算')">
                         <md-icon>restaurant_menu</md-icon>
                         <span class="md-list-item-text">招式伤害计算</span>
                     </md-list-item>
 
-                    <md-list-item>
+                    <md-list-item @click="toPath('/egg', '孵蛋价格计算')">
                         <md-icon>child_care</md-icon>
                         <span class="md-list-item-text">孵蛋价格计算</span>
                     </md-list-item>
 
-                    <md-list-item>
+                    <md-list-item @click="toPath('/shu', '树果收益计算')">
                         <md-icon>spa</md-icon>
                         <span class="md-list-item-text">树果收益计算</span>
                     </md-list-item>
@@ -69,7 +69,15 @@
     export default {
         name: 'Reveal',
         data: () => ({
-            menuVisible: false
-        })
+            menuVisible: false,
+            name: '首页'
+        }),
+        methods: {
+            toPath(path, name) {
+                this.name = name;
+                this.$router.push(path);
+                this.menuVisible = false;
+            }
+        }
     }
 </script>
