@@ -26,7 +26,6 @@ Vue.http = Vue.prototype.$http = function(param) {
         params: param.data,
     };
     axios(config).then(function(data) {
-        console.log(data);
         if (data.data.code === 200) {
             param.callback(data.data.data);
             if (param.lsn) {

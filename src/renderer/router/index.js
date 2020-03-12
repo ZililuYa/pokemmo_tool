@@ -7,22 +7,18 @@ export default new Router({
     routes: [
         {
             path: '/',
-            name: 'home',
-            component: require('@/components/Pvp').default
+            component: require('@/components/Home').default
         },
         {
             path: '/pvp',
-            name: 'home',
             component: require('@/components/Pvp').default
         },
         {
             path: '/egg',
-            name: '',
             component: require('@/components/Not').default
         },
         {
             path: '/shu',
-            name: 'home',
             component: require('@/components/Not').default
         },
         {

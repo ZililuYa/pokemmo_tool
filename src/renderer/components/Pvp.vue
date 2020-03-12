@@ -2,7 +2,7 @@
     <md-content class="md-layout md-gutter">
         <div class="md-layout-item md-size-50">
             <div class="text-center">
-                <md-button class="md-raised md-primary" @click="showDialog=true">进攻宝可梦</md-button>
+                <md-button class="md-raised md-primary" @click="selectPm=1,showDialog=true">进攻宝可梦</md-button>
             </div>
 
             <div v-if="attackPm">
@@ -51,41 +51,131 @@
                     </div>
                 </div>
 
-                <BaseStat :data="attackPm.baseStat"></BaseStat>
-
+                <BaseStat :data="attackPm.baseStat" :setData="setData1" :level="attackPm.level"></BaseStat>
             </div>
         </div>
         <div class="md-layout-item md-size-50">
             <div class="text-center">
-                <md-button class="md-raised md-primary">防守宝可梦</md-button>
+                <md-button class="md-raised md-primary" @click="selectPm=2,showDialog=true">防守宝可梦</md-button>
+            </div>
+
+
+            <div v-if="defensivePm">
+                <div class="text-center">
+                    <div class="sprite-icon" :class="'sprite-icon-'+defensivePm.index"></div>
+                </div>
+                <div class="md-layout md-gutter">
+                    <div class="md-layout-item md-size-50">
+                        <md-field>
+                            <label>宝可梦名称</label>
+                            <md-input v-model="defensivePm.nameZh" :disabled="true"></md-input>
+                        </md-field>
+                    </div>
+                    <div class="md-layout-item md-size-50">
+                        <md-field md-clearable>
+                            <label>等级</label>
+                            <md-input v-model="defensivePm.level" type="number"></md-input>
+                        </md-field>
+                    </div>
+                    <div class="md-layout-item md-size-50">
+                        <div class="radio">
+                            <md-radio v-model="defensivePm.ability" v-if="defensivePm.ability1"
+                                      :value="defensivePm.ability1">
+                                {{defensivePm.ability1}}
+                            </md-radio>
+                            <md-radio v-model="defensivePm.ability" v-if="defensivePm.ability2"
+                                      :value="defensivePm.ability2">
+                                {{defensivePm.ability2}}
+                            </md-radio>
+                            <md-radio v-model="defensivePm.ability" v-if="defensivePm.abilityHide"
+                                      :value="defensivePm.abilityHide">
+                                {{defensivePm.abilityHide}}
+                            </md-radio>
+                        </div>
+                    </div>
+                    <div class="md-layout-item md-size-50">
+                        <div class="radio">
+                            <md-radio v-model="defensivePm.zt" :value="0">
+                                无
+                            </md-radio>
+                            <md-radio v-model="defensivePm.zt" :value="1">
+                                灼伤
+                            </md-radio>
+                            <md-radio v-model="defensivePm.zt" :value="2">
+                                麻痹
+                            </md-radio>
+                        </div>
+                    </div>
+                </div>
+
+                <BaseStat :data="defensivePm.baseStat" :setData="setData2" :level="defensivePm.level"></BaseStat>
+
             </div>
         </div>
-        <div class="md-layout-item md-size-100">
+        <div class="md-layout-item md-size-100" v-if="attackPm">
             <!--            <div class="text-center">-->
             <!--                <md-button class="md-raised md-accent">战斗计算</md-button>-->
             <!--            </div>-->
-            <md-table>
+            <h3>{{attackPm.nameZh}}会的招式</h3>
+            <md-table v-if="learnSet.length">
                 <md-table-row>
                     <!--                    <md-table-head md-numeric>ID</md-table-head>-->
                     <md-table-head>招式名称</md-table-head>
                     <md-table-head :width=100>属性</md-table-head>
                     <md-table-head :width=100>分类</md-table-head>
                     <md-table-head>威力</md-table-head>
-                    <md-table-head>伤害</md-table-head>
-                    <md-table-head>几次击杀</md-table-head>
+                    <md-table-head>伤害计算</md-table-head>
+                    <!--                    <md-table-head>几次击杀</md-table-head>-->
                 </md-table-row>
 
-                <md-table-row v-for="(i,k) in learnSet">
+                <md-table-row v-for="i in learnSet">
                     <!--                    <md-table-cell md-numeric>{{k}}</md-table-cell>-->
                     <md-table-cell>{{i.move}}</md-table-cell>
                     <md-table-cell :class="'category'+i.category">{{i.category}}</md-table-cell>
                     <md-table-cell :class="'type'+i.type">{{i.type}}</md-table-cell>
                     <md-table-cell>{{i.power}}</md-table-cell>
-                    <md-table-cell>{{damageCalc(i.power)}}</md-table-cell>
-                    <md-table-cell>2次</md-table-cell>
+                    <md-table-cell>{{damageCalc(i, attackPm, defensivePm, atBsPm, deBsPm)}}</md-table-cell>
+                    <!--                    <md-table-cell>2次</md-table-cell>-->
                 </md-table-row>
 
             </md-table>
+
+        </div>
+
+        <div class="md-layout-item md-size-100">
+            <!--            <div class="text-center">-->
+            <!--                <md-button class="md-raised md-accent">战斗计算</md-button>-->
+            <!--            </div>-->
+
+            <md-field>
+                <label>招式搜索</label>
+                <md-input v-model="search" @keyup.enter="searchEvent(), searchName=search"></md-input>
+                <md-icon>search</md-icon>
+            </md-field>
+            <md-table v-if="sLearnSet.length">
+                <md-table-row>
+                    <!--                    <md-table-head md-numeric>ID</md-table-head>-->
+                    <md-table-head>招式名称</md-table-head>
+                    <md-table-head :width=100>属性</md-table-head>
+                    <md-table-head :width=100>分类</md-table-head>
+                    <md-table-head>威力</md-table-head>
+                    <md-table-head>伤害计算</md-table-head>
+                    <!--                    <md-table-head>几次击杀</md-table-head>-->
+                </md-table-row>
+
+                <md-table-row v-for="i in sLearnSet">
+                    <!--                    <md-table-cell md-numeric>{{k}}</md-table-cell>-->
+                    <md-table-cell>{{i.move}}</md-table-cell>
+                    <md-table-cell :class="'category'+i.category">{{i.category}}</md-table-cell>
+                    <md-table-cell :class="'type'+i.type">{{i.type}}</md-table-cell>
+                    <md-table-cell>{{i.power}}</md-table-cell>
+                    <md-table-cell>{{damageCalc(i, attackPm, defensivePm, atBsPm, deBsPm)}}</md-table-cell>
+                    <!--                    <md-table-cell>2次</md-table-cell>-->
+                </md-table-row>
+
+            </md-table>
+
+            <div class="text-center" v-if="!sLearnSet.length">暂无{{searchName}}相关招式~</div>
 
         </div>
 
@@ -117,22 +207,92 @@
 <script>
 
     import BaseStat from './component/BaseStat'
+    import {restrainCalc, isProperty} from '../assets/js/lib'
 
     export default {
         data() {
             return {
                 showDialog: false,
+                selectPm: 1,
+                search: '',
                 pm: '',
                 attackPm: undefined,
+                defensivePm: undefined,
+                atBsPm: undefined,
+                deBsPm: undefined,
+                searchName: '',
                 learnSet: [],
+                sLearnSet: [],
                 pmList: [],
             }
         },
         name: 'home',
         components: {BaseStat},
         methods: {
-            damageCalc(i) {
-                return i + ' - 200'
+            searchEvent() {
+                if (this.search) {
+                    this.sLearnSet = [];
+                    this.$http({
+                        url: '/move/detail', data: {nameZh: this.search}, callback: (data) => {
+                            let sLearnSet = [];
+                            data.forEach((item) => {
+                                item.move = item.nameZh;
+                                sLearnSet = this.categoryCalc(sLearnSet, item, []);
+                            });
+                            this.sLearnSet = sLearnSet;
+                        }
+                    })
+                }
+            },
+            setData1(data) {
+                this.atBsPm = new Object(data);
+                this.$forceUpdate();
+                // this.$set(this, 'atBsPm', data);
+            },
+            setData2(data) {
+                this.deBsPm = data;
+                this.$forceUpdate();
+            },
+            damageCalc(move, pm1, pm2, nl1, nl2) {
+                if (!move || !pm1 || !pm2 || !nl1 || !nl2) return '数据不全';
+                let g, f;
+                if (move.category === '物理' && nl1.attack && nl2.defense) {
+                    g = nl1.attack;
+                    f = nl2.defense;
+                } else if (move.category === '特殊' && nl1.spAttack && nl2.spDefense) {
+                    g = nl1.spAttack;
+                    f = nl2.spDefense;
+                } else {
+                    return '数据不全';
+                }
+                let num = ((2 * pm1.level + 10) / 250) * (g / f) * move.power + 2;
+
+                let min = this.calcBonus(num, move, pm1, pm2, 0.85);
+                let max = this.calcBonus(num, move, pm1, pm2, 1);
+
+                let jx1 = Math.ceil(nl2.hp / min);
+                let jx2 = Math.ceil(nl2.hp / max);
+
+                if (min === 0 || max === 0) return '没有任何效果~';
+
+                return `${pm1.nameZh}使用${move.move}，造成伤害 ${min} - ${max}，${pm2.nameZh}血量${nl2.hp}，${jx2} - ${jx1} 次击杀！`
+            },
+            calcBonus(num, move, pm1, pm2, rem) {
+                // 加成=属性一致加成×属性相克造成的倍率×击中要害的倍率×其他加成×随机数（随机数∈[0.85，1]）
+
+                let c1 = 1,     // 属性一致性
+                    c2 = 1,     // 属性相克倍率
+                    c3 = rem;   // 随机数
+                if (move.type === pm1.type1 || move.type === pm1.type2) c1 = 1.5;
+                c2 = this.calcType(move.type, pm2);
+                return Math.floor(num * c1 * c2 * c3);
+            },
+            calcType(type, pm) {
+                let list = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+                let index = isProperty(type);
+                if (pm.type1) list = restrainCalc(list, isProperty(pm.type1));
+                if (pm.type2) list = restrainCalc(list, isProperty(pm.type2));
+                return list[index - 1];
             },
             categoryCalc(list, item, name) {
                 if ((item.category === '物理' || item.category === '特殊') && item.type !== '妖精' && !isNaN(item.power) && name.indexOf(item.move) === -1)
@@ -144,13 +304,14 @@
                 this.$http({
                     url: '/pokemon/detail', lsn: 'poke' + len, data: {index: len}, callback: (data) => {
                         data = data[0];
-                        console.log(data);
                         data.level = 50;
                         data.index = index;
                         data.ability = data.ability1;
                         let nl = Object.keys(data.baseStat), baseStat = data.baseStat;
                         nl.forEach((i) => {
                             baseStat[i + 'Nl'] = 252;
+                            baseStat[i + 'Gt'] = 31;
+                            baseStat[i + 'Xg'] = 0;
                         });
                         data.baseStat = baseStat;
                         data.zt = 0;
@@ -168,9 +329,12 @@
                             learnSet = this.categoryCalc(learnSet, item, learnName);
                             learnName.push(item.move);
                         });
-                        console.log(learnSet);
-                        this.learnSet = learnSet;
-                        this.attackPm = data;
+                        if (this.selectPm === 1) {
+                            this.learnSet = learnSet;
+                            this.attackPm = data;
+                        } else {
+                            this.defensivePm = data;
+                        }
                         // this.$set(this.attackPm, data);
                         this.showDialog = false;
                     }
@@ -178,11 +342,9 @@
             }
         },
         mounted() {
-            // console.log(this.$http)
-            this.clickPoke('006');
+            // this.clickPoke('006');
             this.$http({
                 url: '/pokemon/list', lsn: 's1', data: {generation: 1}, callback: (data) => {
-                    console.log(data);
                     data = data.map(function(item) {
                         let len = item.index.toString().length;
                         if (len === 1) item.index = '00' + item.index.toString();
