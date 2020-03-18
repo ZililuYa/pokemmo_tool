@@ -15,7 +15,7 @@ export default new Router({
         },
         {
             path: '/egg',
-            component: require('@/components/Not').default
+            component: require('@/components/Egg').default
         },
         {
             path: '/shu',

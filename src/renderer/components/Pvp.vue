@@ -42,12 +42,29 @@
                                 无
                             </md-radio>
                             <md-radio v-model="attackPm.zt" :value="1">
-                                灼伤
+                                中毒
                             </md-radio>
                             <md-radio v-model="attackPm.zt" :value="2">
+                                灼伤
+                            </md-radio>
+                            <md-radio v-model="attackPm.zt" :value="3">
                                 麻痹
                             </md-radio>
                         </div>
+                    </div>
+                    <div class="md-layout-item md-size-100">
+                        <md-field>
+                            <label for="movie">道具</label>
+                            <md-select v-model="attackPm.dj" name="movie" id="movie">
+                                <md-option :value="0">无</md-option>
+                                <md-option class="icon-pk icon-pk-ico1" value="1">讲究头带</md-option>
+                                <md-option class="icon-pk icon-pk-ico2" value="2">讲究眼镜</md-option>
+                                <md-option class="icon-pk icon-pk-ico3" value="3">生命宝珠</md-option>
+                                <md-option class="icon-pk icon-pk-ico4" value="4">博识眼镜</md-option>
+                                <md-option class="icon-pk icon-pk-ico5" value="5">力量头带</md-option>
+                                <md-option class="icon-pk icon-pk-ico6" value="6">20%本系道具</md-option>
+                            </md-select>
+                        </md-field>
                     </div>
                 </div>
 
@@ -99,12 +116,26 @@
                                 无
                             </md-radio>
                             <md-radio v-model="defensivePm.zt" :value="1">
-                                灼伤
+                                中毒
                             </md-radio>
                             <md-radio v-model="defensivePm.zt" :value="2">
+                                灼伤
+                            </md-radio>
+                            <md-radio v-model="defensivePm.zt" :value="3">
                                 麻痹
                             </md-radio>
                         </div>
+                    </div>
+
+                    <div class="md-layout-item md-size-100">
+                        <md-field>
+                            <label for="movie">道具</label>
+                            <md-select v-model="defensivePm.dj" name="movie" id="movie">
+                                <md-option :value="0">无</md-option>
+                                <md-option class="icon-pk icon-pk-ico7" value="进化奇石">进化奇石(最终进化有效)</md-option>
+                                <md-option class="icon-pk icon-pk-ico8" value="突击背心">突击背心</md-option>
+                            </md-select>
+                        </md-field>
                     </div>
                 </div>
 
@@ -257,23 +288,46 @@
                 if (!move || !pm1 || !pm2 || !nl1 || !nl2) return '数据不全';
                 let g, f;
                 if (move.category === '物理' && nl1.attack && nl2.defense) {
-                    g = nl1.attack;
-                    f = nl2.defense;
+                    g = Number(nl1.attack);
+                    f = Number(nl2.defense);
+                    // 灼伤且不是毅力
+                    if (pm1.zt == 2 && pm1.ability !== '毅力') g = g / 2;
+                    // 大力士 瑜伽之力
+                    if (pm1.ability === '大力士' || pm1.ability === '瑜伽之力') g = g * 2;
+                    // 毅力 异常状态
+                    if (pm1.ability === '毅力' && pm1.zt) g = g * 1.5;
+                    // 神器鳞片 异常状态
+                    if (pm1.ability === '神奇鳞片' && pm1.zt) f = f * 1.5;
+                    // 中毒激升 中毒
+                    if (pm1.ability === '中毒激升' && pm1.zt == 1) g = g * 1.5;
+                    // 进化奇石
+                    if (pm2.dj === '进化奇石') f = f * 1.5;
                 } else if (move.category === '特殊' && nl1.spAttack && nl2.spDefense) {
-                    g = nl1.spAttack;
-                    f = nl2.spDefense;
+                    g = Number(nl1.spAttack);
+                    f = Number(nl2.spDefense);
+                    // 精神冲击 取防御值
+                    if (move.move === '精神冲击') f = nl2.defense;
+                    // 突击背心 进化奇石
+                    if (pm2.dj === '突击背心' || pm2.dj === '进化奇石') f = f * 1.5;
                 } else {
                     return '数据不全';
                 }
-                let num = ((2 * pm1.level + 10) / 250) * (g / f) * move.power + 2;
+                let power = Number(move.power);
+                // 祸不单行 翻倍
+                if (move.move === '祸不单行' && pm2.zt) power = power * 2;
+                // 硬撑 翻倍
+                if (move.move === '硬撑' && pm1.zt) power = power * 2;
+                // 毒液冲击 翻倍
+                if (move.move === '毒液冲击' && pm2.zt == 1) power = power * 2;
 
+                let num = ((2 * pm1.level + 10) / 250) * (g / f) * power + 2;
                 let min = this.calcBonus(num, move, pm1, pm2, 0.85);
                 let max = this.calcBonus(num, move, pm1, pm2, 1);
 
                 let jx1 = Math.ceil(nl2.hp / min);
                 let jx2 = Math.ceil(nl2.hp / max);
 
-                if (min === 0 || max === 0) return '没有任何效果~';
+                if (min === 0 || max === 0) return `${pm1.nameZh}使用${move.move}，对${pm2.nameZh}没有任何效果~`;
 
                 return `${pm1.nameZh}使用${move.move}，造成伤害 ${min} - ${max}，${pm2.nameZh}血量${nl2.hp}，${jx2} - ${jx1} 次击杀！`
             },
@@ -282,10 +336,17 @@
 
                 let c1 = 1,     // 属性一致性
                     c2 = 1,     // 属性相克倍率
-                    c3 = rem;   // 随机数
+                    c3 = rem,   // 随机数
+                    c4 = 1;     // 道具带来的加成
                 if (move.type === pm1.type1 || move.type === pm1.type2) c1 = 1.5;
                 c2 = this.calcType(move.type, pm2);
-                return Math.floor(num * c1 * c2 * c3);
+                if (pm1.dj == 1 && move.category === '物理') c4 = 1.5;
+                if (pm1.dj == 2 && move.category === '特殊') c4 = 1.5;
+                if (pm1.dj == 3) c4 = 1.3;
+                if (pm1.dj == 4 && move.category === '特殊') c4 = 1.1;
+                if (pm1.dj == 5 && move.category === '物理') c4 = 1.1;
+                if (pm1.dj == 6) c4 = 1.2;
+                return Math.floor(num * c1 * c2 * c3 * c4);
             },
             calcType(type, pm) {
                 let list = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
@@ -497,6 +558,49 @@
                 transition: all 0.5s;
                 cursor: pointer;
             }
+        }
+    }
+
+    .icon-pk {
+        background-size: auto 85%;
+        background-position: 16px center;
+        background-repeat: no-repeat;
+
+        .md-list-item-text {
+            text-align: right;
+            display: inline-block !important;
+        }
+
+        &.icon-pk-ico1 {
+            background-image: url("https://s1.52poke.wiki/wiki/7/7d/Dream_%E8%AE%B2%E7%A9%B6%E5%A4%B4%E5%B8%A6_Sprite.png");
+        }
+
+        &.icon-pk-ico2 {
+            background-image: url("https://s1.52poke.wiki/wiki/6/6f/Dream_%E8%AE%B2%E7%A9%B6%E7%9C%BC%E9%95%9C_Sprite.png");
+        }
+
+        &.icon-pk-ico3 {
+            background-image: url("https://s1.52poke.wiki/wiki/3/39/Dream_%E7%94%9F%E5%91%BD%E5%AE%9D%E7%8F%A0_Sprite.png");
+        }
+
+        &.icon-pk-ico4 {
+            background-image: url("https://s1.52poke.wiki/wiki/4/48/Dream_%E5%8D%9A%E8%AF%86%E7%9C%BC%E9%95%9C_Sprite.png");
+        }
+
+        &.icon-pk-ico5 {
+            background-image: url("https://s1.52poke.wiki/wiki/d/d0/Dream_%E5%8A%9B%E9%87%8F%E5%A4%B4%E5%B8%A6_Sprite.png");
+        }
+
+        &.icon-pk-ico6 {
+            background-image: url("https://s1.52poke.wiki/wiki/2/22/Dream_%E8%BE%BE%E4%BA%BA%E5%B8%A6_Sprite.png");
+        }
+
+        &.icon-pk-ico7 {
+            background-image: url("https://s1.52poke.wiki/wiki/7/75/Dream_%E8%BF%9B%E5%8C%96%E5%A5%87%E7%9F%B3_Sprite.png");
+        }
+
+        &.icon-pk-ico8 {
+            background-image: url("https://s1.52poke.wiki/wiki/c/c0/Dream_%E7%AA%81%E5%87%BB%E8%83%8C%E5%BF%83_Sprite.png");
         }
     }
 </style>
